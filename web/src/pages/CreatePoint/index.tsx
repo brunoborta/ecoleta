@@ -1,15 +1,21 @@
-import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
+import React, {
+  useEffect,
+  useState,
+  ChangeEvent,
+  FormEvent,
+  Fragment,
+} from "react";
 import { Link, useHistory } from "react-router-dom";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiCheckCircle } from "react-icons/fi";
 import { LeafletMouseEvent } from "leaflet";
 import { Map, TileLayer, Marker } from "react-leaflet";
 import axios from "axios";
 
+import Overlay from "../../components/Overlay";
+
 import api from "../../services/api";
-
-import "./styles.css";
-
 import logo from "../../assets/logo.svg";
+import "./styles.css";
 
 interface Item {
   id: number;
@@ -30,6 +36,7 @@ const CreatePoint = () => {
   const [items, setItems] = useState<Item[]>([]);
   const [ufs, setUfs] = useState<string[]>([]);
   const [cities, setCities] = useState<string[]>([]);
+  const [success, setSuccess] = useState<boolean>(false);
 
   const [initialPosition, setInitialPosition] = useState<[number, number]>([
     0,
@@ -123,6 +130,14 @@ const CreatePoint = () => {
     }
   }
 
+  function handleSuccess() {
+    setSuccess(true);
+    setTimeout(() => {
+      setSuccess(false);
+      history.push("/");
+    }, 2000);
+  }
+
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
     const { name, email, whatsapp } = formData;
@@ -142,14 +157,24 @@ const CreatePoint = () => {
       longitude,
     };
 
-    await api.post("points", data);
-
-    alert("ponto de coleta criadaço!");
-    history.push("/");
+    try {
+      await api.post("points", data);
+      handleSuccess();
+    } catch (err) {
+      console.error(err.message);
+    }
   }
 
   return (
     <div id="page-create-point">
+      {success && (
+        <Overlay>
+          <Fragment>
+            <FiCheckCircle />
+            <strong>Cadastro Concluído</strong>
+          </Fragment>
+        </Overlay>
+      )}
       <header>
         <img src={logo} alt="logo ecoleta" />
 
