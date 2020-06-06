@@ -1,10 +1,4 @@
-import React, {
-  useEffect,
-  useState,
-  ChangeEvent,
-  FormEvent,
-  Fragment,
-} from "react";
+import React, { useEffect, useState, ChangeEvent, FormEvent } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { FiArrowLeft, FiCheckCircle } from "react-icons/fi";
 import { LeafletMouseEvent } from "leaflet";
@@ -169,10 +163,10 @@ const CreatePoint = () => {
     <div id="page-create-point">
       {success && (
         <Overlay>
-          <Fragment>
+          <>
             <FiCheckCircle />
             <strong>Cadastro Concluído</strong>
-          </Fragment>
+          </>
         </Overlay>
       )}
       <header>
