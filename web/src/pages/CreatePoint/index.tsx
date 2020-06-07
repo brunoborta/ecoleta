@@ -6,6 +6,7 @@ import { Map, TileLayer, Marker } from "react-leaflet";
 import axios from "axios";
 
 import Overlay from "../../components/Overlay";
+import Dropzone from "../../components/Dropzone";
 
 import api from "../../services/api";
 import logo from "../../assets/logo.svg";
@@ -31,6 +32,7 @@ const CreatePoint = () => {
   const [ufs, setUfs] = useState<string[]>([]);
   const [cities, setCities] = useState<string[]>([]);
   const [success, setSuccess] = useState<boolean>(false);
+  const [selectedFile, setSelectedFile] = useState<File>();
 
   const [initialPosition, setInitialPosition] = useState<[number, number]>([
     0,
@@ -140,17 +142,20 @@ const CreatePoint = () => {
     const items = selectedItems;
     const [latitude, longitude] = selectedPosition;
 
-    const data = {
-      name,
-      email,
-      whatsapp,
-      uf,
-      city,
-      items,
-      latitude,
-      longitude,
-    };
+    const data = new FormData();
 
+    data.append("name", name);
+    data.append("email", email);
+    data.append("whatsapp", whatsapp);
+    data.append("uf", uf);
+    data.append("city", city);
+    data.append("latitude", String(latitude));
+    data.append("longitude", String(longitude));
+    data.append("items", items.join(","));
+
+    if (selectedFile) {
+      data.append("image", selectedFile);
+    }
     try {
       await api.post("points", data);
       handleSuccess();
@@ -182,6 +187,7 @@ const CreatePoint = () => {
           Cadastro do <br /> ponto de coleta
         </h1>
 
+        <Dropzone onFileUploaded={setSelectedFile} />
         <fieldset>
           <legend>
             <h2>Dados</h2>
